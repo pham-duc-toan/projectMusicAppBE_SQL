@@ -1,23 +1,24 @@
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { DataSource, DataSourceOptions } from 'typeorm';
-ConfigModule.forRoot({
-  isGlobal: true,
-});
+
+ConfigModule.forRoot({ isGlobal: true });
 const configService = new ConfigService();
+
+const isTs = __filename.endsWith('.ts');
+
 export const dataSourceOptions: DataSourceOptions = {
-  type: 'mssql',
+  type: 'mysql', // ✅ đổi từ 'mssql' sang 'mysql'
   host: configService.get<string>('DB_HOST', 'localhost'),
-  port: configService.get<number>('DB_PORT', 1433),
-  username: configService.get<string>('DB_USER', 'sa'),
-  password: configService.get<string>('DB_PASSWORD', 'yourStrong(!)Password'),
+  port: configService.get<number>('DB_PORT', 3306),
+  username: configService.get<string>('DB_USER', 'root'),
+  password: configService.get<string>('DB_PASSWORD', ''),
   database: configService.get<string>('DB_NAME', 'music_app_db'),
-  entities: ['dist/**/*.entity.js'],
-  synchronize: false, // Tự động tạo bảng mà không cần migration
-  migrations: ['dist/db/migrations/*.js'],
-  extra: {
-    trustServerCertificate: true,
-  },
+  entities: [isTs ? 'src/**/*.entity.ts' : 'dist/**/*.entity.js'],
+  migrations: [isTs ? 'src/db/migrations/*.ts' : 'dist/db/migrations/*.js'],
+  synchronize: false,
+  charset: 'utf8mb4', // ✅ để hỗ trợ tiếng Việt, emoji...
 };
+
 const dataSource = new DataSource(dataSourceOptions);
 export default dataSource;
 // npm run migration:generate -- db/migrations/ten

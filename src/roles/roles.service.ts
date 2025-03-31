@@ -21,9 +21,6 @@ export class RolesService {
     @InjectRepository(Role)
     private readonly roleRepo: Repository<Role>,
 
-    @InjectRepository(Permission)
-    private readonly permissionRepo: Repository<Permission>,
-
     private readonly permissionService: PermissionsService,
 
     @Inject(forwardRef(() => UserService))
@@ -53,9 +50,7 @@ export class RolesService {
             `Permission ${permissionId} không hợp lệ`,
           );
         }
-        const permission = await this.permissionRepo.findOne({
-          where: { id: permissionId },
-        });
+        const permission = await this.permissionService.findOne(permissionId);
         if (permission) permissions.push(permission);
       }
     }
@@ -130,9 +125,7 @@ export class RolesService {
             `Permission ${permissionId} không hợp lệ`,
           );
         }
-        const permission = await this.permissionRepo.findOne({
-          where: { id: permissionId },
-        });
+        const permission = await this.permissionService.findOne(permissionId);
         if (permission) permissions.push(permission);
       }
       role.permissions = permissions;

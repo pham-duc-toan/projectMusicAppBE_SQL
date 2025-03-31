@@ -36,7 +36,7 @@ async function bootstrap() {
     defaultVersion: ['1', '2'],
   });
 
-  const port = configService.get<number>('PORT') || 3000; // Cung cấp giá trị mặc định nếu cần
+  const port = configService.get<number>('PORT') || 2207; // Cung cấp giá trị mặc định nếu cần
   await app.listen(port);
 }
 bootstrap();

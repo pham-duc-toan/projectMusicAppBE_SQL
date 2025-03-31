@@ -7,6 +7,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { SongForYou } from './entities/song-for-you.entity';
 import { Repository } from 'typeorm';
 import { Song } from 'src/songs/entities/song.entity';
+import { SongsService } from 'src/songs/songs.service';
 
 @Injectable()
 export class SongForYouService {
@@ -14,8 +15,7 @@ export class SongForYouService {
     @InjectRepository(SongForYou)
     private readonly songForYouRepo: Repository<SongForYou>,
 
-    @InjectRepository(Song)
-    private readonly songRepo: Repository<Song>,
+    private readonly songService: SongsService,
   ) {}
 
   // Lấy danh sách bài hát đề xuất đầy đủ
@@ -58,7 +58,7 @@ export class SongForYouService {
 
   // Thêm bài hát vào danh sách
   async addSongToList(songId: string): Promise<SongForYou> {
-    const song = await this.songRepo.findOne({ where: { id: songId } });
+    const song = await this.songService.findById(songId);
     if (!song) throw new BadRequestException('Bài hát không hợp lệ');
 
     let record = await this.songForYouRepo.findOne({
@@ -94,7 +94,7 @@ export class SongForYouService {
 
   // Cập nhật thứ tự danh sách
   async updateSongs(listSong: string[]): Promise<SongForYou> {
-    const songs = await this.songRepo.findByIds(listSong);
+    const songs = await this.songService.findByIds(listSong);
     if (songs.length !== listSong.length) {
       throw new BadRequestException('Một số bài hát không hợp lệ');
     }

@@ -7,7 +7,7 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
 import { Song } from './entities/song.entity';
 import { CreateSongDto } from './dto/create-song.dto';
 import { UpdateSongDto } from './dto/update-song.dto';
@@ -242,5 +242,18 @@ export class SongsService {
       .set({ topic: { id: '67500b84409ba47eea8e2ba3' } })
       .where('topicId = :id', { id: '653b3f79884a78f7ecf902e1' })
       .execute();
+  }
+  // ✅ Tìm 1 bài hát theo ID
+  async findById(id: string): Promise<Song> {
+    const song = await this.songRepo.findOne({ where: { id } });
+    if (!song) throw new NotFoundException('Bài hát không hợp lệ');
+    return song;
+  }
+
+  // ✅ Tìm danh sách bài hát theo mảng ID
+  async findByIds(ids: string[]): Promise<Song[]> {
+    return this.songRepo.find({
+      where: { id: In(ids) },
+    });
   }
 }

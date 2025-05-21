@@ -43,7 +43,7 @@ export class SongsController {
   ) {}
   //CHECK ROLE
   async checkSinger(req: any) {
-    const singerId = req.user.singerId;
+    const singerId = req.user.singerId.id;
     const singer = await this.singersService.findOne(singerId);
     if (singer.status === 'inactive') {
       throw new UnauthorizedException(
@@ -145,15 +145,15 @@ export class SongsController {
   @UseGuards(JwtAuthGuard)
   @Get('managerSong')
   manager(@Request() req) {
-    if (!req.user.singerId) {
+    if (!req.user.singerId.id) {
       throw new UnauthorizedException('Bạn không phải là ca sĩ!');
     }
-    return this.songsService.findSongBySinger(req.user.singerId);
+    return this.songsService.findSongBySinger(req.user.singerId.id);
   }
   @UseGuards(JwtAuthGuard)
   @Delete('deleteSong/:id')
   remove(@Param('id') id: string, @Request() req) {
-    return this.songsService.remove(id, req.user.singerId);
+    return this.songsService.remove(id, req.user.singerId.id);
   }
   //----FAVORITE SONG-----
   @UseGuards(JwtAuthGuard)

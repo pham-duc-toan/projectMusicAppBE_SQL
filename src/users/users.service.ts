@@ -160,7 +160,7 @@ export class UserService {
   async checkUserLogin(username: string, pass: string) {
     const user = await this.userRepo.findOne({
       where: { username, type: 'SYSTEM' },
-      relations: ['role'],
+      relations: ['role', 'singerId'],
     });
 
     if (!user) {
@@ -183,30 +183,6 @@ export class UserService {
     const { password, ...result } = user;
     return result;
   }
-  // async checkUserLogin(username: string, pass: string) {
-  //   const user = await this.userRepo.findOne({
-  //     where: {
-  //       username,
-  //       password: pass,
-  //     },
-  //     relations: ['role'],
-  //   });
-
-  //   if (!user) {
-  //     throw new BadRequestException('Sai tài khoản hoặc mật khẩu');
-  //   }
-
-  //   if (user.status === 'inactive') {
-  //     throw new BadRequestException('Tài khoản của bạn đã bị khóa');
-  //   }
-
-  //   if (user.deleted) {
-  //     throw new BadRequestException('Tài khoản của bạn đã bị xóa');
-  //   }
-
-  //   const { password, ...result } = user;
-  //   return result;
-  // }
 
   async deleteOne(id: string) {
     const user = await this.userRepo.findOne({
@@ -235,7 +211,7 @@ export class UserService {
   async findByTokenRefresh(refresh_token: string) {
     return await this.userRepo.findOne({
       where: { refreshToken: refresh_token },
-      relations: ['role'],
+      relations: ['role', 'singerId'],
     });
   }
 
@@ -428,7 +404,7 @@ export class UserService {
         username: email,
         type: 'GOOGLE',
       },
-      relations: ['role'],
+      relations: ['role', 'singerId'],
     });
   }
 

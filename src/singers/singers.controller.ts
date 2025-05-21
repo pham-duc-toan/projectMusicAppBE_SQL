@@ -92,7 +92,7 @@ export class SingersController {
     @Request() req,
     @Body() updateSingerDto: UpdateSingerDto,
   ) {
-    if (req.user.singerId != id) {
+    if (req.user.singerId.id != id) {
       throw new UnauthorizedException('Bạn không phải quản lý ca sĩ này!');
     }
     return this.singersService.patchSinger(id, updateSingerDto);

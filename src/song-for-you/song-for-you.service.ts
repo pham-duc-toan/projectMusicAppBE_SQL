@@ -20,7 +20,7 @@ export class SongForYouService {
 
   // Lấy danh sách bài hát đề xuất đầy đủ
   async getRecommendedSongs(): Promise<SongForYou> {
-    const record = await this.songForYouRepo.findOne({
+    const [record] = await this.songForYouRepo.find({
       relations: ['listSong', 'listSong.singer', 'listSong.topic'],
     });
 
@@ -34,7 +34,7 @@ export class SongForYouService {
   async getClientRecommendSong(options: any): Promise<SongForYou> {
     const { limit = 10 } = options;
 
-    const record = await this.songForYouRepo.findOne({
+    const [record] = await this.songForYouRepo.find({
       relations: ['listSong', 'listSong.singer', 'listSong.topic'],
     });
 
@@ -49,7 +49,7 @@ export class SongForYouService {
 
   // Lấy danh sách ID bài hát (không populate)
   async getSongs(): Promise<SongForYou> {
-    const record = await this.songForYouRepo.findOne({
+    const [record] = await this.songForYouRepo.find({
       relations: ['listSong'],
     });
     if (!record) throw new NotFoundException('Danh sách đề xuất không tồn tại');
@@ -61,7 +61,7 @@ export class SongForYouService {
     const song = await this.songService.findById(songId);
     if (!song) throw new BadRequestException('Bài hát không hợp lệ');
 
-    let record = await this.songForYouRepo.findOne({
+    let [record] = await this.songForYouRepo.find({
       relations: ['listSong'],
     });
 
@@ -80,7 +80,7 @@ export class SongForYouService {
 
   // Xoá bài hát khỏi danh sách
   async removeSongFromList(songId: string): Promise<SongForYou> {
-    const record = await this.songForYouRepo.findOne({
+    const [record] = await this.songForYouRepo.find({
       relations: ['listSong'],
     });
 
@@ -99,7 +99,7 @@ export class SongForYouService {
       throw new BadRequestException('Một số bài hát không hợp lệ');
     }
 
-    let record = await this.songForYouRepo.findOne({
+    let [record] = await this.songForYouRepo.find({
       relations: ['listSong'],
     });
 

@@ -11,7 +11,7 @@ export class Song extends BaseUUIDEntity {
   @Column({ nullable: true })
   avatar: string;
 
-  @Column({ nullable: true })
+  @Column({ nullable: true, type: 'text' })
   description: string;
 
   @ManyToOne(() => Singer, { eager: true, onDelete: 'CASCADE' })
@@ -28,7 +28,7 @@ export class Song extends BaseUUIDEntity {
   @Column({ default: 0 })
   listen: number;
 
-  @Column({ nullable: true })
+  @Column({ nullable: true, type: 'text' })
   lyrics: string;
 
   @Column()

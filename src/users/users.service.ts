@@ -119,7 +119,10 @@ export class UserService {
       relations: [
         'listPlaylist',
         'listPlaylist.listSong',
-        'listPlaylist.listSong.singerId',
+        'listPlaylist.listSong.singer',
+        'listFavoriteSong',
+        'listFavoriteSong.singer',
+        'listFavoriteSong.topic',
       ],
     });
 
@@ -138,11 +141,11 @@ export class UserService {
         'role.permissions',
         'listPlaylist',
         'listPlaylist.listSong',
-        'listPlaylist.listSong.singerId',
-        'listPlaylist.listSong.topicId',
+        'listPlaylist.listSong.singer',
+        'listPlaylist.listSong.topic',
         'listFavoriteSong',
-        'listFavoriteSong.singerId',
-        'listFavoriteSong.topicId',
+        'listFavoriteSong.singer',
+        'listFavoriteSong.topic',
         'singerId',
       ],
     });
@@ -180,6 +183,30 @@ export class UserService {
     const { password, ...result } = user;
     return result;
   }
+  // async checkUserLogin(username: string, pass: string) {
+  //   const user = await this.userRepo.findOne({
+  //     where: {
+  //       username,
+  //       password: pass,
+  //     },
+  //     relations: ['role'],
+  //   });
+
+  //   if (!user) {
+  //     throw new BadRequestException('Sai tài khoản hoặc mật khẩu');
+  //   }
+
+  //   if (user.status === 'inactive') {
+  //     throw new BadRequestException('Tài khoản của bạn đã bị khóa');
+  //   }
+
+  //   if (user.deleted) {
+  //     throw new BadRequestException('Tài khoản của bạn đã bị xóa');
+  //   }
+
+  //   const { password, ...result } = user;
+  //   return result;
+  // }
 
   async deleteOne(id: string) {
     const user = await this.userRepo.findOne({

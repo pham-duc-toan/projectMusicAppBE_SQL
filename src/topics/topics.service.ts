@@ -6,7 +6,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, ILike, FindOptionsWhere } from 'typeorm';
+import { Repository, ILike, FindOptionsWhere, Like } from 'typeorm';
 import { Topic } from './entities/topic.entity';
 import { CreateTopicDto } from './dto/create-topic.dto';
 import { UpdateTopicDto } from './dto/update-topic.dto';
@@ -40,8 +40,12 @@ export class TopicsService {
     const { filter, sort, skip, limit } = options;
 
     const whereClause = [
-      { title: ILike(`%${filter.title || ''}%`) },
-      { slug: ILike(`%${convertToSlug(filter.slug || '')}%`) },
+      {
+        title: Like(`%${(filter.title || '').toLowerCase()}%`),
+      },
+      {
+        slug: Like(`%${convertToSlug(filter.slug || '').toLowerCase()}%`),
+      },
     ];
 
     return this.topicRepo.find({
@@ -57,13 +61,13 @@ export class TopicsService {
 
     const whereClause: FindOptionsWhere<Topic>[] = [
       {
-        title: ILike(`%${filter.title || ''}%`),
-        status: 'active' as 'active',
+        title: Like(`%${(filter.title || '').toLowerCase()}%`),
+        status: 'active',
         deleted: false,
       },
       {
-        slug: ILike(`%${convertToSlug(filter.slug || '')}%`),
-        status: 'active' as 'active',
+        slug: Like(`%${convertToSlug(filter.slug || '').toLowerCase()}%`),
+        status: 'active',
         deleted: false,
       },
     ];

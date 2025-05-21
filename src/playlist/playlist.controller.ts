@@ -48,7 +48,7 @@ export class PlaylistController {
   @UseGuards(JwtAuthGuard)
   @Get('detail')
   async detail(@Request() req) {
-    return this.playlistService.detail(req.user._id);
+    return this.playlistService.detail(req.user.id);
   }
   @UseGuards(JwtAuthGuard)
   @Post('addSong/:id')
@@ -57,7 +57,7 @@ export class PlaylistController {
     @Param('id') idListSong: string,
     @Request() req,
   ) {
-    return this.playlistService.addSong(idSong, idListSong, req.user._id);
+    return this.playlistService.addSong(idSong, idListSong, req.user.id);
   }
   @UseGuards(JwtAuthGuard)
   @Delete('removeSong/:id')
@@ -66,7 +66,7 @@ export class PlaylistController {
     @Param('id') idListSong: string,
     @Request() req,
   ) {
-    return this.playlistService.removeSong(idSong, idListSong, req.user._id);
+    return this.playlistService.removeSong(idSong, idListSong, req.user.id);
   }
   @UseGuards(JwtAuthGuard)
   @Delete(':id')
@@ -74,14 +74,14 @@ export class PlaylistController {
     @Param('id') id: string,
     @Request() req,
   ): Promise<{ message: string }> {
-    const listPlaylist = await this.playlistService.detail(req.user._id);
+    const listPlaylist = await this.playlistService.detail(req.user.id);
 
     const exists = listPlaylist.some(
       (playlist) => playlist.id.toString() === id,
     );
 
     if (exists) {
-      await this.playlistService.remove(id, req.user._id);
+      await this.playlistService.remove(id, req.user.id);
     } else {
       return {
         message: `Bạn không phải người tạo playlist nên ko có quyền xóa`,
@@ -97,7 +97,7 @@ export class PlaylistController {
     @Body() body: UpdatePlaylistDto,
     @Request() req,
   ): Promise<{ message: string }> {
-    const listPlaylist = await this.playlistService.detail(req.user._id);
+    const listPlaylist = await this.playlistService.detail(req.user.id);
 
     const exists = listPlaylist.some(
       (playlist) => playlist.id.toString() === id,

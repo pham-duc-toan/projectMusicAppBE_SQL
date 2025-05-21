@@ -23,7 +23,8 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
 
   async validate(payload: IUser) {
     const { role } = payload;
-    const roleInfo = await this.rolesService.findOne(role._id);
+
+    const roleInfo = await this.rolesService.findOne(role.id);
     const listPrivate = await this.permissionsService.findAll({});
 
     //return ra user cho hàm handleRequest của JwtAuthGuard

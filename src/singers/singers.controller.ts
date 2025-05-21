@@ -48,7 +48,7 @@ export class SingersController {
     if (req.user.singerId) {
       throw new UnauthorizedException('Bạn đã quản lý ca sĩ rồi!');
     }
-    return this.singersService.createSinger(createSingerDto, req.user._id);
+    return this.singersService.createSinger(createSingerDto, req.user.id);
   }
   @Get()
   @ResponeMessage('Find all')

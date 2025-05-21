@@ -1,7 +1,7 @@
 import { IRole } from 'src/roles/role.inerface';
 
 export interface IUser {
-  _id: string;
+  id: string;
   fullName: string;
   username: string;
   role: IRole;

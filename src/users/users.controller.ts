@@ -49,7 +49,7 @@ export class UserController {
   @UseGuards(JwtAuthGuard)
   @Get('profile')
   async getProfile(@Request() req): Promise<User> {
-    return this.userService.profileUser(req.user._id);
+    return this.userService.profileUser(req.user.id);
   }
   @UseGuards(JwtAuthGuard)
   @UseInterceptors(
@@ -59,12 +59,12 @@ export class UserController {
   )
   @Patch('detail')
   async updateProfile(@Request() req, @Body() updateUser: UpdateUserDto) {
-    return this.userService.updateProfile(req.user._id, updateUser);
+    return this.userService.updateProfile(req.user.id, updateUser);
   }
   @UseGuards(JwtAuthGuard)
   @Patch('updateSinger')
   async updateSinger(@Request() req, @Body() singerId: UpdateSinger) {
-    return this.userService.updateSinger(req.user._id, singerId.id);
+    return this.userService.updateSinger(req.user.id, singerId.id);
   }
   @UseGuards(JwtAuthGuard)
   @Patch('change-status/:id')

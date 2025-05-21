@@ -159,17 +159,17 @@ export class SongsController {
   @UseGuards(JwtAuthGuard)
   @Get('favoriteSongs')
   favoriteSongs(@Request() req) {
-    return this.songsService.getFavoriteSongs(req.user._id);
+    return this.songsService.getFavoriteSongs(req.user.id);
   }
   @UseGuards(JwtAuthGuard)
   @Post('favoriteSongs/add/:id')
   async addFavoriteSongs(@Request() req, @Param('id') id: string) {
-    return this.songsService.addSongFavorite(req.user._id, id);
+    return this.songsService.addSongFavorite(req.user.id, id);
   }
   @UseGuards(JwtAuthGuard)
   @Delete('favoriteSongs/remove/:id')
   async removeFavoriteSongs(@Request() req, @Param('id') id: string) {
-    return this.songsService.removeSongFavorite(req.user._id, id);
+    return this.songsService.removeSongFavorite(req.user.id, id);
   }
   //-------SO LUOT NGHE-----------
   @Patch('listen/increase/:id')

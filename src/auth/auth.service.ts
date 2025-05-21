@@ -28,37 +28,50 @@ export class AuthService {
       this.jwtService.verify(refreshToken, {
         secret: this.configService.get<string>('JWT_REFRESH_TOKEN_SECRET'),
       });
-      const user: any = await this.usersService.findByTokenRefresh(
-        refreshToken,
-      );
+      const user: any =
+        await this.usersService.findByTokenRefresh(refreshToken);
 
       if (user) {
-        const { _id, avatar, fullName, username, type, role, singerId } = user;
-
+        const {
+          id,
+          avatar,
+          fullName,
+          username,
+          type,
+          role: roles,
+          singerId,
+        } = user;
+        const { permissions, ...role } = roles;
         // Tạo payload cho JWT, thêm singerId nếu tồn tại
         const payload: any = {
           sub: 'token login',
           iss: 'from server',
-          _id,
+          id,
           fullName,
           username,
           avatar,
           role,
           type,
         };
-
+        // Payload cho Refresh Token (Không cần singerId trong refresh token)
+        const payloadRefreshToken = {
+          sub: 'token login',
+          iss: 'from server',
+          username,
+          type,
+        };
         if (singerId) {
           payload.singerId = singerId;
         }
 
-        const refresh_token = this.createRefreshToken(payload);
-        await this.usersService.updateTokenRefresh(refresh_token, _id);
+        const refresh_token = this.createRefreshToken(payloadRefreshToken);
+        await this.usersService.updateTokenRefresh(refresh_token, id);
 
         return {
           access_token: this.jwtService.sign(payload),
           refresh_token,
           user: {
-            _id,
+            id,
             fullName,
             username,
             type,
@@ -80,7 +93,16 @@ export class AuthService {
   };
 
   async login(user, response?: Response) {
-    const { _id, fullName, username, role, avatar, type, singerId } = user;
+    const {
+      id,
+      fullName,
+      username,
+      role: roles,
+      avatar,
+      type,
+      singerId,
+    } = user;
+    const { permissions, ...role } = roles;
 
     // Payload cho Refresh Token (Không cần singerId trong refresh token)
     const payloadRefreshToken = {
@@ -94,7 +116,7 @@ export class AuthService {
     const payloadAccessToken: any = {
       sub: 'token login',
       iss: 'from server',
-      _id,
+      id,
       fullName,
       username,
       role,
@@ -111,13 +133,13 @@ export class AuthService {
     const access_token = this.jwtService.sign(payloadAccessToken);
 
     // Cập nhật refresh token vào cơ sở dữ liệu
-    await this.usersService.updateTokenRefresh(refresh_token, _id);
+    await this.usersService.updateTokenRefresh(refresh_token, id);
 
     return {
       access_token,
       refresh_token,
       user: {
-        _id,
+        id,
         fullName,
         username,
         role,
@@ -129,7 +151,7 @@ export class AuthService {
   }
 
   logOut = async (user: IUser, response: Response) => {
-    await this.usersService.updateTokenRefresh('', user._id);
+    await this.usersService.updateTokenRefresh('', user.id);
     response.clearCookie('refresh_token');
 
     return {

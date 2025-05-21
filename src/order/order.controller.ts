@@ -41,7 +41,7 @@ export class OrderController {
       );
     }
     const bodyNew = {
-      userId: req.user._id,
+      userId: req.user.id,
       orderId,
       shortLink,
       resultCode: '1000',
@@ -115,7 +115,7 @@ export class OrderController {
   @Get('checkUser/payment')
   async checkHopLeUser(@Request() req): Promise<Order> {
     return this.orderService.findOrder({
-      userId: req.user._id,
+      userId: req.user.id,
       status: 'init',
       resultCode: '0',
     });

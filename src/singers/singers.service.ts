@@ -74,7 +74,7 @@ export class SingersService {
 
     if (filter?.query) {
       query.andWhere(
-        '(singer.fullName ILIKE :query OR singer.slug ILIKE :slug)',
+        '(LOWER(singer.fullName) LIKE LOWER(:query) OR LOWER(singer.slug) LIKE LOWER(:slug))',
         {
           query: `%${filter.query}%`,
           slug: `%${convertToSlug(filter.query)}%`,
@@ -99,7 +99,7 @@ export class SingersService {
 
     if (filter?.query) {
       query.andWhere(
-        '(singer.fullName ILIKE :query OR singer.slug ILIKE :slug)',
+        '(LOWER(singer.fullName) LIKE LOWER(:query) OR LOWER(singer.slug) LIKE LOWER(:slug))',
         {
           query: `%${filter.query}%`,
           slug: `%${convertToSlug(filter.query)}%`,

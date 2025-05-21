@@ -10,10 +10,9 @@ export class PaymentService {
     const accessKey = 'F8BBA842ECF85';
     const secretKey = 'K951B6PE1waDMi640xX08PD3vg6EkVlz';
     const partnerCode = 'MOMO';
-    const redirectUrl =
-      'https://musicapptoandeptrai.vercel.app/en/singers/createSinger';
+    const redirectUrl = 'http://localhost:3000/en/singers/createSinger';
     //link api moi
-    const linkNgrok = 'https://mucicapptoandeptrai.onrender.com';
+    const linkNgrok = 'https://39e6-58-187-126-213.ngrok-free.app';
     const ipnUrl = linkNgrok + '/api/v1/payment/ipn';
     const requestType = 'payWithMethod';
     const amount = '289000';

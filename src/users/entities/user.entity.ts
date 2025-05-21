@@ -40,7 +40,7 @@ export class User extends BaseUUIDEntity {
   @Column({ type: 'enum', enum: ['SYSTEM', 'GITHUB', 'GOOGLE'] })
   type: 'SYSTEM' | 'GITHUB' | 'GOOGLE';
 
-  @Column({ nullable: true })
+  @Column({ nullable: true, type: 'text' })
   refreshToken: string;
 
   @ManyToMany(() => PlayList, { cascade: true })

@@ -96,6 +96,8 @@ export class RolesService {
   }
 
   async update(id: string, updateRoleDto: UpdateRoleDto): Promise<Role> {
+    console.log(updateRoleDto);
+
     const role = await this.roleRepo.findOne({
       where: { id },
       relations: ['permissions'],

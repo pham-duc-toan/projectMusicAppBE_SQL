@@ -10,7 +10,7 @@ export class Topic extends BaseUUIDEntity {
   @Column()
   avatar: string;
 
-  @Column({ default: '' })
+  @Column({ default: '', type: 'text' })
   description: string;
 
   @Column({ type: 'enum', enum: ['active', 'inactive'] })

@@ -37,46 +37,72 @@ export class TopicsService {
   }
 
   async findAll(options: any): Promise<Topic[]> {
-    const { filter, sort, skip, limit } = options;
+    const {
+      filter = {},
+      sort = { createdAt: 'DESC' },
+      skip = 0,
+      limit = 20,
+    } = options;
 
-    const whereClause = [
-      {
-        title: Like(`%${(filter.title || '').toLowerCase()}%`),
-      },
-      {
-        slug: Like(`%${convertToSlug(filter.slug || '').toLowerCase()}%`),
-      },
-    ];
+    const whereClause = [];
+
+    if (filter.title) {
+      whereClause.push({
+        title: Like(`%${filter.title.toLowerCase()}%`),
+      });
+    }
+
+    if (filter.slug) {
+      whereClause.push({
+        slug: Like(`%${convertToSlug(filter.slug).toLowerCase()}%`),
+      });
+    }
 
     return this.topicRepo.find({
-      where: whereClause,
-      order: sort || { createdAt: 'DESC' },
-      skip,
-      take: limit,
+      where: whereClause.length > 0 ? whereClause : {},
+      order: sort,
+      skip: Number(skip),
+      take: Number(limit),
     });
   }
 
   async findClient(options: any) {
-    const { filter, sort, skip, limit } = options;
+    const {
+      filter = {},
+      sort = { createdAt: 'DESC' },
+      skip = 0,
+      limit = 20,
+    } = options;
 
-    const whereClause: FindOptionsWhere<Topic>[] = [
-      {
-        title: Like(`%${(filter.title || '').toLowerCase()}%`),
+    const whereClause: FindOptionsWhere<any>[] = [];
+
+    if (filter.title) {
+      whereClause.push({
+        title: Like(`%${filter.title.toLowerCase()}%`),
         status: 'active',
         deleted: false,
-      },
-      {
-        slug: Like(`%${convertToSlug(filter.slug || '').toLowerCase()}%`),
+      });
+    }
+
+    if (filter.slug) {
+      whereClause.push({
+        slug: Like(`%${convertToSlug(filter.slug).toLowerCase()}%`),
         status: 'active',
         deleted: false,
-      },
-    ];
+      });
+    }
+
+    // Nếu không có title hoặc slug → fallback về tìm tất cả "active + !deleted"
+    const where =
+      whereClause.length > 0
+        ? whereClause
+        : [{ status: 'active', deleted: false }];
 
     const topics = await this.topicRepo.find({
-      where: whereClause,
-      order: sort || { createdAt: 'DESC' },
-      skip,
-      take: limit,
+      where,
+      order: sort,
+      skip: Number(skip),
+      take: Number(limit),
     });
 
     const enrichedTopics = await Promise.all(

@@ -82,22 +82,33 @@ export class SingersService {
       );
     }
 
+    // Default sort
+    const orderByField = sort?.field || 'singer.createdAt';
+    const orderByDirection =
+      sort?.order?.toUpperCase() === 'ASC' ? 'ASC' : 'DESC';
+
     return query
-      .orderBy(sort || 'singer.createdAt', 'DESC')
-      .skip(skip || 0)
-      .take(limit || 20)
+      .orderBy(orderByField, orderByDirection)
+      .skip(Number(skip) || 0)
+      .take(Number(limit) || 20)
       .getMany();
   }
 
   async findClient(options: any) {
-    const { filter, sort, skip, limit } = options;
+    const {
+      filter = {},
+      sort = { field: 'singer.createdAt', order: 'DESC' },
+      skip = 0,
+      limit = 20,
+    } = options;
+
     const query = this.singerRepo.createQueryBuilder('singer');
 
     query.where('singer.status = :status AND singer.deleted = false', {
       status: 'active',
     });
 
-    if (filter?.query) {
+    if (filter.query) {
       query.andWhere(
         '(LOWER(singer.fullName) LIKE LOWER(:query) OR LOWER(singer.slug) LIKE LOWER(:slug))',
         {
@@ -108,9 +119,12 @@ export class SingersService {
     }
 
     const singers = await query
-      .orderBy(sort || 'singer.createdAt', 'DESC')
-      .skip(skip || 0)
-      .take(limit || 20)
+      .orderBy(
+        sort.field || 'singer.createdAt',
+        sort.order?.toUpperCase() === 'ASC' ? 'ASC' : 'DESC',
+      )
+      .skip(Number(skip))
+      .take(Number(limit))
       .getMany();
 
     const enriched = await Promise.all(

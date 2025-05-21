@@ -24,7 +24,7 @@ async function bootstrap() {
 
   // Cấu hình CORS
   app.enableCors({
-    origin: 'https://musicapptoandeptrai.vercel.app',
+    origin: 'http://localhost:3000',
     credentials: true,
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
     preflightContinue: false,

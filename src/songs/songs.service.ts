@@ -7,7 +7,7 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { In, Repository } from 'typeorm';
+import { ILike, In, Repository } from 'typeorm';
 import { Song } from './entities/song.entity';
 import { CreateSongDto } from './dto/create-song.dto';
 import { UpdateSongDto } from './dto/update-song.dto';
@@ -52,11 +52,21 @@ export class SongsService {
   async findAll(options: any): Promise<{ data: Song[]; total: number }> {
     const { filter, sort, skip, limit } = options;
 
+    let where: any[] = [];
+
+    if (filter?.query) {
+      const keyword = `%${filter.query}%`;
+      where = [
+        { status: 'active', deleted: false, lyrics: ILike(keyword) },
+        { status: 'active', deleted: false, slug: ILike(keyword) },
+        { status: 'active', deleted: false, title: ILike(keyword) },
+      ];
+    } else {
+      where = [{ status: 'active', deleted: false }];
+    }
+
     const [data, total] = await this.songRepo.findAndCount({
-      where: {
-        status: 'active',
-        deleted: false,
-      },
+      where,
       relations: ['singer', 'topic'],
       order: sort || { createdAt: 'DESC' },
       skip,

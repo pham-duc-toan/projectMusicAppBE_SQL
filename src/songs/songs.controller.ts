@@ -64,10 +64,11 @@ export class SongsController {
   async create(@Body() createSongDto: CreateSongDto, @Request() req) {
     await this.checkSinger(req);
     //logic
+
     createSongDto.audio = createSongDto.audio[0];
     createSongDto.avatar = createSongDto.avatar[0];
 
-    return this.songsService.create(createSongDto, req.user?.singerId || '');
+    return this.songsService.create(createSongDto, req.user?.singerId.id || '');
   }
 
   @Patch('editSong/:id')
@@ -98,7 +99,7 @@ export class SongsController {
     return this.songsService.update(
       id,
       updateSongDto,
-      req.user?.singerId || '',
+      req.user?.singerId.id || '',
     );
   }
   @UseGuards(JwtAuthGuard)

@@ -18,14 +18,12 @@ export class CreateSongDto {
 
   @IsNotEmpty({ message: 'Thiếu topic' })
   @IsString()
-  topicId: string;
+  topic: string;
 
   @IsOptional()
-  @IsString()
   avatar?: string;
 
   @IsOptional()
-  @IsString()
   audio?: string;
 
   @IsOptional()

@@ -125,7 +125,13 @@ export class TopicsService {
     }
     return topic;
   }
-
+  async findOneById(id: string): Promise<Topic> {
+    const topic = await this.topicRepo.findOne({ where: { id } });
+    if (!topic) {
+      throw new NotFoundException(`Topic với id "${id}" không tồn tại`);
+    }
+    return topic;
+  }
   async update(id: string, updateDto: UpdateTopicDto): Promise<Topic> {
     const topic = await this.topicRepo.findOne({ where: { id } });
     if (!topic) {

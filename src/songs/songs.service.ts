@@ -37,7 +37,7 @@ export class SongsService {
       throw new UnauthorizedException('Chỉ ca sĩ mới có thể thực hiện');
 
     const singer = await this.singerService.findOne(singerId);
-    const topic = await this.topicService.findOne(createSongDto.topicId);
+    const topic = await this.topicService.findOneById(createSongDto.topic);
 
     const newSong = this.songRepo.create({
       ...createSongDto,
@@ -142,8 +142,8 @@ export class SongsService {
       throw new UnauthorizedException('Không có quyền sửa bài hát này');
     }
 
-    if (updateDto.topicId) {
-      const topic = await this.topicService.findOne(updateDto.topicId);
+    if (updateDto.topic) {
+      const topic = await this.topicService.findOneById(updateDto.topic);
       song.topic = topic;
     }
 

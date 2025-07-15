@@ -1,5 +1,3 @@
-// src/singers/singers.controller.ts
-
 import {
   Controller,
   Get,
@@ -7,10 +5,8 @@ import {
   Delete,
   Param,
   Body,
-  BadRequestException,
   UploadedFile,
   UseInterceptors,
-  ParseFilePipeBuilder,
   Patch,
   Query,
   UseGuards,
@@ -18,9 +14,7 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { SingersService } from './singers.service';
-
-import { ResponeMessage, User } from 'src/decorator/customize';
-
+import { ResponeMessage } from 'src/decorator/customize';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { CloudinaryFileUploadInterceptor } from 'src/interceptors/FileToLinkOnlineCloudinary.interceptor';
 import { UpdateSingerDto } from './dto/update-singer.dto';
@@ -30,15 +24,27 @@ import {
 } from 'src/interceptors/ValidatorFileExist.interceptor';
 import { CreateSingerDto } from './dto/create-singer.dto';
 import aqp from 'api-query-params';
-
 import { JwtAuthGuard } from 'src/auth/passport/jwt-auth.guard';
 import { Singer } from './entities/singer.entity';
+import {
+  ApiTags,
+  ApiOperation,
+  ApiResponse,
+  ApiParam,
+  ApiQuery,
+  ApiBearerAuth,
+} from '@nestjs/swagger';
 
+@ApiTags('Singers')
 @Controller('singers')
 export class SingersController {
   constructor(private readonly singersService: SingersService) {}
+
+  @Post()
   @UseGuards(JwtAuthGuard)
-  @Post('create')
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Tạo ca sĩ mới' })
+  @ApiResponse({ status: 201, description: 'Tạo ca sĩ thành công' })
   @UseInterceptors(
     FileInterceptor('avatar'),
     ValidatorFileExistImage,
@@ -50,11 +56,15 @@ export class SingersController {
     }
     return this.singersService.createSinger(createSingerDto, req.user.id);
   }
+
   @Get()
+  @ApiOperation({ summary: 'Lấy danh sách ca sĩ (admin hoặc backend)' })
+  @ApiQuery({ name: 'limit', required: false })
+  @ApiQuery({ name: 'skip', required: false })
+  @ApiResponse({ status: 200, description: 'Danh sách ca sĩ' })
   @ResponeMessage('Find all')
   async findAll(@Query() query: any): Promise<Singer[]> {
     const { sort, skip, limit, projection, population, ...e } = aqp(query);
-
     const filter = e.filter;
     return this.singersService.findAll({
       filter,
@@ -65,11 +75,14 @@ export class SingersController {
       population,
     });
   }
-  @Get('client')
-  @ResponeMessage('Find all client')
+
+  @Get('public')
+  @ApiOperation({ summary: 'Lấy danh sách ca sĩ cho client hiển thị' })
+  @ApiQuery({ name: 'limit', required: false })
+  @ApiQuery({ name: 'skip', required: false })
+  @ApiResponse({ status: 200, description: 'Danh sách ca sĩ public' })
   async findClient(@Query() query: any) {
     const { sort, skip, limit, projection, population, ...e } = aqp(query);
-
     const filter = e.filter;
     return this.singersService.findClient({
       filter,
@@ -80,8 +93,13 @@ export class SingersController {
       population,
     });
   }
-  @UseGuards(JwtAuthGuard)
+
   @Patch(':id')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Cập nhật thông tin ca sĩ' })
+  @ApiParam({ name: 'id', description: 'ID của ca sĩ' })
+  @ApiResponse({ status: 200, description: 'Cập nhật thành công' })
   @UseInterceptors(
     FileInterceptor('avatar'),
     ValidatorFileTypeImage,
@@ -92,28 +110,44 @@ export class SingersController {
     @Request() req,
     @Body() updateSingerDto: UpdateSingerDto,
   ) {
-    if (req.user.singerId.id != id) {
+    if (req.user.singerId.id !== id) {
       throw new UnauthorizedException('Bạn không phải quản lý ca sĩ này!');
     }
     return this.singersService.patchSinger(id, updateSingerDto);
   }
-  @Get('detail/:id')
+
+  @Get(':id')
+  @ApiOperation({ summary: 'Lấy chi tiết ca sĩ theo ID' })
+  @ApiParam({ name: 'id', description: 'ID của ca sĩ' })
+  @ApiResponse({ status: 200, description: 'Thông tin ca sĩ' })
   async findOne(@Param('id') id: string) {
     return this.singersService.findOne(id);
   }
-  @Get('detailClient/:slug')
+
+  @Get('public/:slug')
+  @ApiOperation({ summary: 'Lấy chi tiết ca sĩ public theo slug' })
+  @ApiParam({ name: 'slug', description: 'Slug của ca sĩ' })
+  @ApiResponse({ status: 200, description: 'Thông tin ca sĩ cho client' })
   async findOneClient(@Param('slug') slug: string) {
     return this.singersService.findOneClient(slug);
   }
-  //--------ADMIN QUAN LY-----
-  @UseGuards(JwtAuthGuard)
+
   @Delete(':id')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Xóa ca sĩ (admin)' })
+  @ApiParam({ name: 'id', description: 'ID của ca sĩ' })
+  @ApiResponse({ status: 200, description: 'Xóa ca sĩ thành công' })
   async deleteSinger(@Param('id') id: string) {
     return this.singersService.deleteSinger(id);
   }
 
+  @Patch(':id/status')
   @UseGuards(JwtAuthGuard)
-  @Patch('changeStatus/:id')
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Thay đổi trạng thái ca sĩ (admin)' })
+  @ApiParam({ name: 'id', description: 'ID của ca sĩ' })
+  @ApiResponse({ status: 200, description: 'Thay đổi trạng thái thành công' })
   async changeStatus(@Param('id') id: string) {
     return await this.singersService.changeStatus(id);
   }

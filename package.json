@@ -22,7 +22,8 @@
     "typeorm": "npm run build && npx typeorm -d dist/db/data-source.js",
     "migration:generate": "npm run typeorm -- migration:generate",
     "migration:run": "npm run typeorm -- migration:run",
-    "migration:revert": "npm run typeorm -- migration:revert"
+    "migration:revert": "npm run typeorm -- migration:revert",
+    "postinstall": "patch-package"
   },
   "dependencies": {
     "@nestjs/axios": "^4.0.0",
@@ -34,8 +35,9 @@
     "@nestjs/mapped-types": "*",
     "@nestjs/passport": "^11.0.4",
     "@nestjs/platform-express": "11.0.3",
-    "@nestjs/schedule": "^5.0.1",
+    "@nestjs/schedule": "^6.0.0",
     "@nestjs/serve-static": "^5.0.1",
+    "@nestjs/swagger": "^11.2.0",
     "@nestjs/typeorm": "^11.0.0",
     "@types/passport-google-oauth20": "^2.0.16",
     "api-query-params": "^5.4.0",
@@ -59,6 +61,7 @@
     "rimraf": "^6.0.1",
     "rxjs": "7.8.1",
     "streamifier": "^0.1.1",
+    "swagger-ui-express": "^5.0.1",
     "typeorm": "^0.3.17",
     "unidecode": "^1.1.0",
     "uuid": "^11.1.0"
@@ -85,6 +88,8 @@
     "eslint-config-prettier": "10.0.1",
     "eslint-plugin-prettier": "5.2.3",
     "jest": "29.7.0",
+    "patch-package": "^8.0.0",
+    "postinstall-postinstall": "^2.1.0",
     "prettier": "3.4.2",
     "source-map-support": "^0.5.21",
     "supertest": "7.0.0",

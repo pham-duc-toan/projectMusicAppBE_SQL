@@ -1,18 +1,21 @@
 import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import axios from 'axios';
 import * as crypto from 'crypto';
 import { OrderService } from 'src/order/order.service';
 
 @Injectable()
 export class PaymentService {
-  constructor(private readonly orderService: OrderService) {}
+  constructor(
+    private readonly orderService: OrderService,
+    private readonly configService: ConfigService,
+  ) {}
   async createPayment(): Promise<any> {
     const accessKey = 'F8BBA842ECF85';
     const secretKey = 'K951B6PE1waDMi640xX08PD3vg6EkVlz';
     const partnerCode = 'MOMO';
-    const redirectUrl = 'http://localhost:3000/en/singers/createSinger';
-    //link api moi
-    const linkNgrok = 'https://c289-58-187-126-213.ngrok-free.app';
+    const redirectUrl = this.configService.get<string>('REDIRECT_URL_MOMO');
+    const linkNgrok = this.configService.get<string>('HOST_BE_MOMO_CALLBACK');
     const ipnUrl = linkNgrok + '/api/v1/payment/ipn';
     const requestType = 'payWithMethod';
     const amount = '289000';

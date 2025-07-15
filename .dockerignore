@@ -1,0 +1,29 @@
+# Node modules local không cần copy
+node_modules
+
+# Build output cũ
+dist
+
+# Logs
+npm-debug.log
+yarn-debug.log
+yarn-error.log
+*.log
+
+# Hệ thống/IDE
+.DS_Store
+.vscode
+.idea
+
+# Git
+.git
+.gitignore
+
+
+
+# Test files (tuỳ chọn nếu chỉ cần production build)
+test
+coverage
+
+# Cache
+*.cache

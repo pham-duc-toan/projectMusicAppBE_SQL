@@ -18,6 +18,7 @@ import { SongForYouModule } from './song-for-you/song-for-you.module';
 import { ForgotPasswordModule } from './forgot-password/forgot-password.module';
 import { PaymentModule } from './payment/payment.module';
 import { OrderModule } from './order/order.module';
+import { PingController } from './ping/ping.controller';
 
 @Module({
   imports: [
@@ -42,5 +43,6 @@ import { OrderModule } from './order/order.module';
     PaymentModule,
     OrderModule,
   ],
+  controllers: [PingController],
 })
 export class AppModule {}

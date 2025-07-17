@@ -24,6 +24,7 @@ import {
 } from '@nestjs/swagger';
 
 import aqp from 'api-query-params';
+import { UseJWTAuth } from 'src/common/decorators/authenticated';
 
 @ApiTags('Roles')
 @Controller('roles')
@@ -31,8 +32,7 @@ export class RolesController {
   constructor(private readonly rolesService: RolesService) {}
 
   @Post()
-  @UseGuards(JwtAuthGuard)
-  @ApiBearerAuth()
+  @UseJWTAuth()
   @ApiOperation({ summary: 'Tạo role mới' })
   @ApiResponse({ status: 201, description: 'Tạo role thành công' })
   async create(@Body() createRoleDto: CreateRoleDto): Promise<Role> {
@@ -40,8 +40,7 @@ export class RolesController {
   }
 
   @Get()
-  @UseGuards(JwtAuthGuard)
-  @ApiBearerAuth()
+  @UseJWTAuth()
   @ApiOperation({ summary: 'Lấy danh sách role với filter và phân trang' })
   @ApiQuery({ name: 'limit', required: false, description: 'Giới hạn kết quả' })
   @ApiQuery({ name: 'skip', required: false, description: 'Bỏ qua kết quả' })
@@ -75,8 +74,7 @@ export class RolesController {
   }
 
   @Patch(':id')
-  @UseGuards(JwtAuthGuard)
-  @ApiBearerAuth()
+  @UseJWTAuth()
   @ApiOperation({ summary: 'Cập nhật thông tin role theo ID' })
   @ApiParam({ name: 'id', description: 'ID của role cần cập nhật' })
   @ApiResponse({ status: 200, description: 'Cập nhật thành công' })
@@ -88,8 +86,7 @@ export class RolesController {
   }
 
   @Delete(':id')
-  @UseGuards(JwtAuthGuard)
-  @ApiBearerAuth()
+  @UseJWTAuth()
   @ApiOperation({ summary: 'Xóa role theo ID' })
   @ApiParam({ name: 'id', description: 'ID của role cần xóa' })
   @ApiResponse({ status: 200, description: 'Xóa role thành công' })

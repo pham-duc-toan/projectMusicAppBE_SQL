@@ -15,7 +15,6 @@ import { User } from './entities/user.entity';
 
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { changePassword } from './dto/change-password.dto';
 
 import { RolesService } from 'src/roles/roles.service';
 import { SingersService } from 'src/singers/singers.service';
@@ -23,6 +22,7 @@ import { PlaylistService } from 'src/playlist/playlist.service';
 import { Role } from 'src/roles/entities/role.entity';
 import { PlayList } from 'src/playlist/entities/playlist.entity';
 import { Song } from 'src/songs/entities/song.entity';
+import { ChangePasswordDto } from './dto/change-password.dto';
 
 @Injectable()
 export class UserService {
@@ -369,7 +369,7 @@ export class UserService {
   }
 
   //user đổi mật khẩu
-  async changePassword(username: string, dataPass: changePassword) {
+  async changePassword(username: string, dataPass: ChangePasswordDto) {
     const { passOld, passNew } = dataPass;
 
     const user = await this.userRepo.findOne({ where: { username } });

@@ -16,11 +16,11 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { JwtAuthGuard } from 'src/auth/passport/jwt-auth.guard';
 import aqp from 'api-query-params';
-import { UpdateSinger } from './dto/update-singer.dto';
+
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ValidatorFileTypeImage } from 'src/interceptors/ValidatorFileExist.interceptor';
 import { CloudinaryFileUploadInterceptor } from 'src/interceptors/FileToLinkOnlineCloudinary.interceptor';
-import { changePassword } from './dto/change-password.dto';
+
 import { User } from './entities/user.entity';
 import {
   ApiTags,
@@ -29,7 +29,11 @@ import {
   ApiBearerAuth,
   ApiQuery,
   ApiParam,
+  ApiBody,
 } from '@nestjs/swagger';
+import { ChangePasswordDto } from './dto/change-password.dto';
+import { UpdateSingerDto } from './dto/update-singer.dto';
+import { UseJWTAuth } from 'src/common/decorators/authenticated';
 
 @ApiTags('Users')
 @Controller('users')
@@ -66,8 +70,7 @@ export class UserController {
   }
 
   @Get('profile')
-  @UseGuards(JwtAuthGuard)
-  @ApiBearerAuth()
+  @UseJWTAuth()
   @ApiOperation({ summary: 'Lấy thông tin user hiện tại' })
   @ApiResponse({ status: 200, description: 'Thông tin user' })
   async getProfile(@Request() req): Promise<User> {
@@ -75,10 +78,10 @@ export class UserController {
   }
 
   @Patch('profile')
-  @UseGuards(JwtAuthGuard)
-  @ApiBearerAuth()
+  @UseJWTAuth()
   @ApiOperation({ summary: 'Cập nhật profile user' })
   @ApiResponse({ status: 200, description: 'Cập nhật thành công' })
+  @ApiBody({ type: UpdateUserDto })
   @UseInterceptors(
     FileInterceptor('avatar'),
     ValidatorFileTypeImage,
@@ -89,17 +92,16 @@ export class UserController {
   }
 
   @Patch('profile/singer')
-  @UseGuards(JwtAuthGuard)
-  @ApiBearerAuth()
+  @UseJWTAuth()
   @ApiOperation({ summary: 'Gán ca sĩ cho user' })
+  @ApiBody({ type: UpdateSingerDto })
   @ApiResponse({ status: 200, description: 'Cập nhật ca sĩ thành công' })
-  async updateSinger(@Request() req, @Body() singerId: UpdateSinger) {
+  async updateSinger(@Request() req, @Body() singerId: UpdateSingerDto) {
     return this.userService.updateSinger(req.user.id, singerId.id);
   }
 
   @Patch(':id/status')
-  @UseGuards(JwtAuthGuard)
-  @ApiBearerAuth()
+  @UseJWTAuth()
   @ApiParam({ name: 'id', description: 'ID của user cần đổi trạng thái' })
   @ApiOperation({ summary: 'Đổi trạng thái hoạt động của user' })
   @ApiResponse({ status: 200, description: 'Đổi trạng thái thành công' })
@@ -108,6 +110,7 @@ export class UserController {
   }
 
   @Delete(':id')
+  @UseJWTAuth()
   @ApiParam({ name: 'id', description: 'ID của user cần xóa' })
   @ApiOperation({ summary: 'Xóa user theo ID' })
   @ApiResponse({ status: 200, description: 'Xóa user thành công' })
@@ -116,8 +119,7 @@ export class UserController {
   }
 
   @Patch(':id/role/:roleId')
-  @UseGuards(JwtAuthGuard)
-  @ApiBearerAuth()
+  @UseJWTAuth()
   @ApiParam({ name: 'id', description: 'ID của user' })
   @ApiParam({ name: 'roleId', description: 'ID của role cần gán' })
   @ApiOperation({ summary: 'Gán quyền cho user' })
@@ -130,11 +132,13 @@ export class UserController {
   }
 
   @Patch('change-password')
-  @UseGuards(JwtAuthGuard)
-  @ApiBearerAuth()
+  @UseJWTAuth()
   @ApiOperation({ summary: 'Đổi mật khẩu user hiện tại' })
   @ApiResponse({ status: 200, description: 'Đổi mật khẩu thành công' })
-  async changePassword(@Request() req, @Body() body: changePassword) {
+  @ApiResponse({ status: 400, description: 'Dữ liệu không hợp lệ' })
+  @ApiResponse({ status: 401, description: 'Không xác thực JWT' })
+  @ApiBody({ type: ChangePasswordDto }) // ✅ BẮT BUỘC để Swagger hiển thị đúng phần body
+  async changePassword(@Request() req, @Body() body: ChangePasswordDto) {
     return this.userService.changePassword(req.user.username, body);
   }
 }

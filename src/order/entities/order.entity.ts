@@ -1,6 +1,6 @@
 // src/entities/order.entity.ts
 
-import { BaseUUIDEntity } from 'src/entities/base.entity';
+import { BaseUUIDEntity } from 'src/bases/base.entity';
 import { Entity, Column } from 'typeorm';
 // src/entities/order.entity.ts hoặc src/common/enums/order-status.enum.ts
 export enum OrderStatus {

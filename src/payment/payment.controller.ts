@@ -1,7 +1,13 @@
 import { Body, Controller, Post } from '@nestjs/common';
 import { PaymentService } from './payment.service';
 import { OrderService } from 'src/order/order.service';
-import { ApiTags, ApiOperation, ApiResponse, ApiBody } from '@nestjs/swagger';
+import {
+  ApiTags,
+  ApiOperation,
+  ApiResponse,
+  ApiBody,
+  ApiExcludeEndpoint,
+} from '@nestjs/swagger';
 
 @ApiTags('Payment')
 @Controller('payment')
@@ -19,19 +25,7 @@ export class PaymentController {
   }
 
   @Post('ipn')
-  @ApiOperation({ summary: 'Nhận IPN từ cổng thanh toán (callback kết quả)' })
-  @ApiResponse({ status: 200, description: 'Xử lý IPN thành công' })
-  @ApiBody({
-    schema: {
-      type: 'object',
-      properties: {
-        orderId: { type: 'string', example: 'ORD123456' },
-        resultCode: { type: 'string', example: '0' },
-        message: { type: 'string', example: 'Thanh toán thành công' },
-      },
-      required: ['orderId', 'resultCode', 'message'],
-    },
-  })
+  @ApiExcludeEndpoint()
   async handleIpn(@Body() ipnData: any) {
     const { resultCode, orderId, message } = ipnData;
 

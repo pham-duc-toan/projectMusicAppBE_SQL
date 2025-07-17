@@ -1,4 +1,4 @@
-import { BaseUUIDEntity } from 'src/entities/base.entity';
+import { BaseUUIDEntity } from 'src/bases/base.entity';
 import { PlayList } from 'src/playlist/entities/playlist.entity';
 import { Role } from 'src/roles/entities/role.entity';
 import { Singer } from 'src/singers/entities/singer.entity';

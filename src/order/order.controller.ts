@@ -24,34 +24,26 @@ import {
   ApiParam,
   ApiQuery,
   ApiBody,
+  ApiCreatedResponse,
 } from '@nestjs/swagger';
-
+import { UseJWTAuth } from 'src/common/decorators/authenticated';
+import { ApiExcludeEndpoint } from '@nestjs/swagger';
+import { CreateOrderDto } from './dto/create-order-dto';
 @ApiTags('Orders')
 @Controller('orders')
 export class OrderController {
   constructor(private readonly orderService: OrderService) {}
 
   @Post()
-  @UseGuards(JwtAuthGuard)
-  @ApiBearerAuth()
+  @UseJWTAuth()
   @ApiOperation({ summary: 'Tạo đơn hàng mới' })
-  @ApiResponse({ status: 201, description: 'Tạo đơn hàng thành công' })
-  @ApiBody({
-    schema: {
-      type: 'object',
-      properties: {
-        orderId: { type: 'string', example: 'ORD12345' },
-        shortLink: { type: 'string', example: 'https://short.link/payment' },
-      },
-      required: ['orderId', 'shortLink'],
-    },
-  })
-  async createOrder(@Body() body: any, @Request() req): Promise<Order> {
+  @ApiCreatedResponse({ description: 'Tạo đơn hàng thành công', type: Order })
+  @ApiBody({ type: CreateOrderDto }) // ✅ dùng DTO này cho Swagger UI
+  async createOrder(
+    @Body() body: CreateOrderDto,
+    @Request() req,
+  ): Promise<Order> {
     const { orderId, shortLink } = body;
-
-    if (!orderId || !shortLink) {
-      throw new BadRequestException('Thiếu thông tin bắt buộc');
-    }
 
     const existingOrder = await this.orderService.findOrderByOrderId(orderId);
     if (existingOrder) {
@@ -68,23 +60,12 @@ export class OrderController {
       message:
         'Giao dịch đã được khởi tạo, chờ người dùng xác nhận thanh toán.',
     };
+
     return this.orderService.createOrder(bodyNew);
   }
 
   @Patch(':orderId/result-code')
-  @ApiOperation({ summary: 'Cập nhật resultCode cho đơn hàng' })
-  @ApiParam({ name: 'orderId', description: 'Mã đơn hàng' })
-  @ApiBody({
-    schema: {
-      type: 'object',
-      properties: {
-        resultCode: { type: 'string', example: '0' },
-        message: { type: 'string', example: 'Thanh toán thành công' },
-      },
-      required: ['resultCode'],
-    },
-  })
-  @ApiResponse({ status: 200, description: 'Cập nhật thành công' })
+  @ApiExcludeEndpoint()
   async patchResultCode(
     @Param('orderId') orderId: string,
     @Body('resultCode') resultCode: string | number,
@@ -109,18 +90,7 @@ export class OrderController {
   }
 
   @Patch(':orderId/status')
-  @ApiOperation({ summary: 'Cập nhật trạng thái đơn hàng sang done' })
-  @ApiParam({ name: 'orderId', description: 'Mã đơn hàng' })
-  @ApiBody({
-    schema: {
-      type: 'object',
-      properties: {
-        status: { type: 'string', example: 'done' },
-      },
-      required: ['status'],
-    },
-  })
-  @ApiResponse({ status: 200, description: 'Cập nhật trạng thái thành công' })
+  @ApiExcludeEndpoint()
   async updateStatus(
     @Param('orderId') orderId: string,
     @Body('status') status: string,
@@ -168,8 +138,7 @@ export class OrderController {
   }
 
   @Get('check-user/payment')
-  @UseGuards(JwtAuthGuard)
-  @ApiBearerAuth()
+  @UseJWTAuth()
   @ApiOperation({
     summary: 'Kiểm tra đơn hàng chờ thanh toán của user hiện tại',
   })

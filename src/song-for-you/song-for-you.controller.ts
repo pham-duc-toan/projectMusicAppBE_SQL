@@ -22,6 +22,7 @@ import {
   ApiBody,
 } from '@nestjs/swagger';
 import aqp from 'api-query-params';
+import { UseJWTAuth } from 'src/common/decorators/authenticated';
 
 @ApiTags('Recommended Songs')
 @Controller('song-for-you')
@@ -71,8 +72,7 @@ export class SongForYouController {
   }
 
   @Post(':songId')
-  @UseGuards(JwtAuthGuard)
-  @ApiBearerAuth()
+  @UseJWTAuth()
   @ApiOperation({ summary: 'Thêm bài hát vào danh sách đề xuất' })
   @ApiParam({ name: 'songId', description: 'ID của bài hát cần thêm' })
   @ApiResponse({ status: 200, description: 'Thêm bài hát thành công' })
@@ -82,8 +82,7 @@ export class SongForYouController {
   }
 
   @Delete(':songId')
-  @UseGuards(JwtAuthGuard)
-  @ApiBearerAuth()
+  @UseJWTAuth()
   @ApiOperation({ summary: 'Xóa bài hát khỏi danh sách đề xuất' })
   @ApiParam({ name: 'songId', description: 'ID của bài hát cần xóa' })
   @ApiResponse({ status: 200, description: 'Xóa bài hát thành công' })
@@ -93,8 +92,7 @@ export class SongForYouController {
   }
 
   @Patch('order')
-  @UseGuards(JwtAuthGuard)
-  @ApiBearerAuth()
+  @UseJWTAuth()
   @ApiOperation({ summary: 'Cập nhật thứ tự danh sách bài hát đề xuất' })
   @ApiBody({
     schema: {

@@ -14,7 +14,7 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { SingersService } from './singers.service';
-import { ResponeMessage } from 'src/decorator/customize';
+import { ResponeMessage } from 'src/common/decorators/customize';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { CloudinaryFileUploadInterceptor } from 'src/interceptors/FileToLinkOnlineCloudinary.interceptor';
 import { UpdateSingerDto } from './dto/update-singer.dto';
@@ -33,7 +33,10 @@ import {
   ApiParam,
   ApiQuery,
   ApiBearerAuth,
+  ApiConsumes,
+  ApiBody,
 } from '@nestjs/swagger';
+import { UseJWTAuth } from 'src/common/decorators/authenticated';
 
 @ApiTags('Singers')
 @Controller('singers')
@@ -41,10 +44,11 @@ export class SingersController {
   constructor(private readonly singersService: SingersService) {}
 
   @Post()
-  @UseGuards(JwtAuthGuard)
-  @ApiBearerAuth()
+  @UseJWTAuth()
   @ApiOperation({ summary: 'Tạo ca sĩ mới' })
   @ApiResponse({ status: 201, description: 'Tạo ca sĩ thành công' })
+  @ApiConsumes('multipart/form-data') // ✅ cho file upload
+  @ApiBody({ type: CreateSingerDto }) // ✅ hiện các field trong Swagger UI
   @UseInterceptors(
     FileInterceptor('avatar'),
     ValidatorFileExistImage,
@@ -77,7 +81,9 @@ export class SingersController {
   }
 
   @Get('public')
-  @ApiOperation({ summary: 'Lấy danh sách ca sĩ cho client hiển thị' })
+  @ApiOperation({
+    summary: 'Lấy danh sách ca sĩ cho và thêm số bài hát của họ',
+  })
   @ApiQuery({ name: 'limit', required: false })
   @ApiQuery({ name: 'skip', required: false })
   @ApiResponse({ status: 200, description: 'Danh sách ca sĩ public' })
@@ -95,11 +101,12 @@ export class SingersController {
   }
 
   @Patch(':id')
-  @UseGuards(JwtAuthGuard)
-  @ApiBearerAuth()
+  @UseJWTAuth()
   @ApiOperation({ summary: 'Cập nhật thông tin ca sĩ' })
   @ApiParam({ name: 'id', description: 'ID của ca sĩ' })
   @ApiResponse({ status: 200, description: 'Cập nhật thành công' })
+  @ApiConsumes('multipart/form-data') // ✅ cho file upload
+  @ApiBody({ type: CreateSingerDto }) // ✅ hiện các field trong Swagger UI
   @UseInterceptors(
     FileInterceptor('avatar'),
     ValidatorFileTypeImage,
@@ -133,8 +140,7 @@ export class SingersController {
   }
 
   @Delete(':id')
-  @UseGuards(JwtAuthGuard)
-  @ApiBearerAuth()
+  @UseJWTAuth()
   @ApiOperation({ summary: 'Xóa ca sĩ (admin)' })
   @ApiParam({ name: 'id', description: 'ID của ca sĩ' })
   @ApiResponse({ status: 200, description: 'Xóa ca sĩ thành công' })
@@ -143,8 +149,7 @@ export class SingersController {
   }
 
   @Patch(':id/status')
-  @UseGuards(JwtAuthGuard)
-  @ApiBearerAuth()
+  @UseJWTAuth()
   @ApiOperation({ summary: 'Thay đổi trạng thái ca sĩ (admin)' })
   @ApiParam({ name: 'id', description: 'ID của ca sĩ' })
   @ApiResponse({ status: 200, description: 'Thay đổi trạng thái thành công' })

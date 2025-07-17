@@ -1,6 +1,6 @@
 // src/forgot-password/forgot-password.entity.ts
 
-import { BaseUUIDEntity } from 'src/entities/base.entity';
+import { BaseUUIDEntity } from 'src/bases/base.entity';
 import {
   Entity,
   PrimaryGeneratedColumn,

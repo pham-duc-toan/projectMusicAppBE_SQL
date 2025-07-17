@@ -1,4 +1,4 @@
-import { BaseUUIDEntity } from 'src/entities/base.entity';
+import { BaseUUIDEntity } from 'src/bases/base.entity';
 import { Permission } from 'src/permissions/entities/permission.entity';
 import { Entity, Column, ManyToMany, JoinTable, Index } from 'typeorm';
 

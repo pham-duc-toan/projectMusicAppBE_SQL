@@ -1,5 +1,5 @@
 // src/entities/permission.entity.ts
-import { BaseUUIDEntity } from 'src/entities/base.entity';
+import { BaseUUIDEntity } from 'src/bases/base.entity';
 import { Entity, Column } from 'typeorm';
 
 @Entity()

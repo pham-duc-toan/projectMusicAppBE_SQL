@@ -1,4 +1,4 @@
-import { BaseUUIDEntity } from 'src/entities/base.entity';
+import { BaseUUIDEntity } from 'src/bases/base.entity';
 import { Singer } from 'src/singers/entities/singer.entity';
 import { Topic } from 'src/topics/entities/topic.entity';
 import { Entity, Column, ManyToOne, JoinColumn, Index } from 'typeorm';

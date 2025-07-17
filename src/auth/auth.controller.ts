@@ -11,7 +11,7 @@ import {
   Req,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { ResponeMessage } from 'src/decorator/customize';
+import { ResponeMessage } from 'src/common/decorators/customize';
 import { LocalAuthGuard } from './passport/local-auth.guard';
 import { Request as ReqExpress, Response } from 'express';
 import { RefreshTokenDto } from './dto/refresh-token.dto';
@@ -25,6 +25,8 @@ import {
   ApiBearerAuth,
   ApiBody,
 } from '@nestjs/swagger';
+import { LoginDto } from './dto/login.dto';
+import { UseJWTAuth } from 'src/common/decorators/authenticated';
 
 const ms = require('ms');
 
@@ -43,6 +45,7 @@ export class AuthController {
     status: 201,
     description: 'Đăng nhập thành công, trả về token',
   })
+  @ApiBody({ type: LoginDto })
   async login(@Request() req, @Res({ passthrough: true }) response: Response) {
     const ip = req?.ip || req.headers['x-forwarded-for'];
     console.log('User IP:', ip);
@@ -63,8 +66,7 @@ export class AuthController {
   }
 
   @Post('logout')
-  @UseGuards(JwtAuthGuard)
-  @ApiBearerAuth()
+  @UseJWTAuth()
   @ApiOperation({ summary: 'Đăng xuất tài khoản' })
   @ApiResponse({ status: 200, description: 'Đăng xuất thành công' })
   @ResponeMessage('LogOut')

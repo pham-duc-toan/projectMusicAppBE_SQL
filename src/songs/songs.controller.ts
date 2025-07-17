@@ -32,7 +32,10 @@ import {
   ApiParam,
   ApiQuery,
   ApiBearerAuth,
+  ApiConsumes,
+  ApiBody,
 } from '@nestjs/swagger';
+import { UseJWTAuth } from 'src/common/decorators/authenticated';
 
 @ApiTags('Songs')
 @Controller('songs')
@@ -51,9 +54,10 @@ export class SongsController {
   }
 
   @Post()
-  @UseGuards(JwtAuthGuard)
-  @ApiBearerAuth()
+  @UseJWTAuth()
   @ApiOperation({ summary: 'Ca sĩ tạo bài hát mới' })
+  @ApiConsumes('multipart/form-data') // ✅ báo cho Swagger biết đây là form-data
+  @ApiBody({ type: CreateSongDto }) // ✅ hiển thị các field trong body
   @UseInterceptors(
     FileFieldsInterceptor([
       { name: 'avatar', maxCount: 1 },
@@ -70,10 +74,12 @@ export class SongsController {
   }
 
   @Patch(':id')
-  @UseGuards(JwtAuthGuard)
-  @ApiBearerAuth()
+  @UseJWTAuth()
   @ApiOperation({ summary: 'Ca sĩ cập nhật bài hát' })
   @ApiParam({ name: 'id', description: 'ID bài hát' })
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({ type: UpdateSongDto }) // ✅ hiển thị body cho Swagger
+  @ApiResponse({ status: 200, description: 'Cập nhật bài hát thành công' })
   @UseInterceptors(
     FileFieldsInterceptor([
       { name: 'avatar', maxCount: 1 },
@@ -114,8 +120,7 @@ export class SongsController {
   }
 
   @Get('admin')
-  @UseGuards(JwtAuthGuard)
-  @ApiBearerAuth()
+  @UseJWTAuth()
   @ApiOperation({ summary: 'Admin lấy danh sách toàn bộ bài hát' })
   findFull(@Query() query: any) {
     const { sort, skip, limit, projection, population, ...e } = aqp(query);
@@ -148,9 +153,12 @@ export class SongsController {
   }
 
   @Get('manager/mysongs')
-  @UseGuards(JwtAuthGuard)
-  @ApiBearerAuth()
+  @UseJWTAuth()
   @ApiOperation({ summary: 'Ca sĩ lấy danh sách bài hát của mình' })
+  @ApiResponse({
+    status: 200,
+    description: 'Danh sách bài hát của ca sĩ hiện tại',
+  })
   manager(@Request() req) {
     if (!req.user.singerId.id)
       throw new UnauthorizedException('Bạn không phải ca sĩ!');
@@ -158,33 +166,31 @@ export class SongsController {
   }
 
   @Delete(':id')
-  @UseGuards(JwtAuthGuard)
-  @ApiBearerAuth()
+  @UseJWTAuth()
   @ApiOperation({ summary: 'Ca sĩ xóa bài hát của mình' })
+  @ApiParam({ name: 'id', description: 'ID bài hát cần xóa' }) // ✅ thêm
+  @ApiResponse({ status: 200, description: 'Xoá thành công' })
   remove(@Param('id') id: string, @Request() req) {
     return this.songsService.remove(id, req.user.singerId.id);
   }
 
   // FAVORITE SONG
   @Get('favorites/list')
-  @UseGuards(JwtAuthGuard)
-  @ApiBearerAuth()
+  @UseJWTAuth()
   @ApiOperation({ summary: 'Lấy danh sách bài hát yêu thích của user' })
   favoriteSongs(@Request() req) {
     return this.songsService.getFavoriteSongs(req.user.id);
   }
 
   @Post('favorites/add/:id')
-  @UseGuards(JwtAuthGuard)
-  @ApiBearerAuth()
+  @UseJWTAuth()
   @ApiOperation({ summary: 'Thêm bài hát vào danh sách yêu thích' })
   addFavoriteSongs(@Request() req, @Param('id') id: string) {
     return this.songsService.addSongFavorite(req.user.id, id);
   }
 
   @Delete('favorites/remove/:id')
-  @UseGuards(JwtAuthGuard)
-  @ApiBearerAuth()
+  @UseJWTAuth()
   @ApiOperation({ summary: 'Xóa bài hát khỏi danh sách yêu thích' })
   removeFavoriteSongs(@Request() req, @Param('id') id: string) {
     return this.songsService.removeSongFavorite(req.user.id, id);
@@ -192,14 +198,17 @@ export class SongsController {
 
   @Patch('listen/increase/:id')
   @ApiOperation({ summary: 'Tăng lượt nghe của bài hát' })
+  @ApiParam({ name: 'id', description: 'ID bài hát cần tăng lượt nghe' })
+  @ApiResponse({ status: 200, description: 'Tăng lượt nghe thành công' })
   increaseListen(@Param('id') id: string) {
     return this.songsService.increaseListen(id);
   }
 
   @Patch('status/:id')
-  @UseGuards(JwtAuthGuard)
-  @ApiBearerAuth()
+  @UseJWTAuth()
   @ApiOperation({ summary: 'Admin thay đổi trạng thái bài hát' })
+  @ApiParam({ name: 'id', description: 'ID bài hát cần cập nhật trạng thái' }) // ✅
+  @ApiResponse({ status: 200, description: 'Thay đổi trạng thái thành công' })
   changeStatus(@Param('id') id: string) {
     return this.songsService.changeStatus(id);
   }

@@ -29,7 +29,10 @@ import {
   ApiBearerAuth,
   ApiParam,
   ApiQuery,
+  ApiConsumes,
+  ApiBody,
 } from '@nestjs/swagger';
+import { UseJWTAuth } from 'src/common/decorators/authenticated';
 
 @ApiTags('Topics')
 @Controller('topics')
@@ -37,17 +40,20 @@ export class TopicsController {
   constructor(private readonly topicsService: TopicsService) {}
 
   @Post()
-  @UseGuards(JwtAuthGuard)
-  @ApiBearerAuth()
+  @UseJWTAuth()
   @ApiOperation({ summary: 'Tạo chủ đề mới' })
   @ApiResponse({ status: 201, description: 'Tạo chủ đề thành công' })
+  @ApiConsumes('multipart/form-data') // ✅ cho file upload
+  @ApiBody({ type: CreateTopicDto }) // ✅ hiện các field trong Swagger UI
   @UseInterceptors(
     FileInterceptor('avatar'),
     ValidatorFileExistImage,
     CloudinaryFileUploadInterceptor,
   )
   async create(@Body() createTopicDto: CreateTopicDto) {
-    return this.topicsService.create(createTopicDto);
+    console.log('createTopicDto', createTopicDto);
+
+    // return this.topicsService.create(createTopicDto);
   }
 
   @Get()
@@ -93,10 +99,11 @@ export class TopicsController {
   }
 
   @Patch(':id')
-  @UseGuards(JwtAuthGuard)
-  @ApiBearerAuth()
+  @UseJWTAuth()
   @ApiOperation({ summary: 'Cập nhật thông tin chủ đề' })
   @ApiParam({ name: 'id', description: 'ID của chủ đề cần cập nhật' })
+  @ApiConsumes('multipart/form-data') // ✅ Swagger hiểu là form-data
+  @ApiBody({ type: UpdateTopicDto }) // ✅ hiện các trường trong Swagger UI
   @ApiResponse({ status: 200, description: 'Cập nhật thành công' })
   @UseInterceptors(
     FileInterceptor('avatar'),
@@ -111,8 +118,7 @@ export class TopicsController {
   }
 
   @Delete(':id')
-  @UseGuards(JwtAuthGuard)
-  @ApiBearerAuth()
+  @UseJWTAuth()
   @ApiOperation({ summary: 'Xóa chủ đề theo ID' })
   @ApiParam({ name: 'id', description: 'ID của chủ đề cần xóa' })
   @ApiResponse({ status: 200, description: 'Xóa thành công' })

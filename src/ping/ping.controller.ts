@@ -4,6 +4,6 @@ import { Controller, Get } from '@nestjs/common';
 export class PingController {
   @Get()
   getPing() {
-    return { message: 'pong' };
+    return { message: process.env.PING };
   }
 }

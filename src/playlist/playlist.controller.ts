@@ -24,12 +24,13 @@ import { SongToPlayList } from './dto/add-song-to-playlist.dto';
 import { JwtAuthGuard } from 'src/auth/passport/jwt-auth.guard';
 import { UpdatePlaylistDto } from './dto/update-playlist.dto';
 import { PlayList } from './entities/playlist.entity';
+import { UseJWTAuth } from 'src/common/decorators/authenticated';
 
 @ApiTags('Playlists')
 @Controller('playlists')
 export class PlaylistController {
   constructor(private readonly playlistService: PlaylistService) {}
-
+  @UseJWTAuth()
   @Post()
   @ApiOperation({ summary: 'Tạo playlist mới' })
   @ApiBody({ type: CreatePlaylistDto })
@@ -71,8 +72,7 @@ export class PlaylistController {
   }
 
   @Get('user/my-playlists')
-  @UseGuards(JwtAuthGuard)
-  @ApiBearerAuth()
+  @UseJWTAuth()
   @ApiOperation({ summary: 'Lấy danh sách playlist của user hiện tại' })
   @ApiResponse({
     status: 200,
@@ -84,8 +84,7 @@ export class PlaylistController {
   }
 
   @Post(':id/songs')
-  @UseGuards(JwtAuthGuard)
-  @ApiBearerAuth()
+  @UseJWTAuth()
   @ApiOperation({ summary: 'Thêm bài hát vào playlist' })
   @ApiParam({ name: 'id', description: 'ID của playlist' })
   @ApiBody({ type: SongToPlayList })
@@ -99,8 +98,7 @@ export class PlaylistController {
   }
 
   @Delete(':id/songs')
-  @UseGuards(JwtAuthGuard)
-  @ApiBearerAuth()
+  @UseJWTAuth()
   @ApiOperation({ summary: 'Xóa bài hát khỏi playlist' })
   @ApiParam({ name: 'id', description: 'ID của playlist' })
   @ApiBody({ type: SongToPlayList })
@@ -114,8 +112,7 @@ export class PlaylistController {
   }
 
   @Delete(':id')
-  @UseGuards(JwtAuthGuard)
-  @ApiBearerAuth()
+  @UseJWTAuth()
   @ApiOperation({ summary: 'Xóa playlist của user hiện tại' })
   @ApiParam({ name: 'id', description: 'ID của playlist' })
   @ApiResponse({
@@ -147,8 +144,7 @@ export class PlaylistController {
   }
 
   @Patch(':id')
-  @UseGuards(JwtAuthGuard)
-  @ApiBearerAuth()
+  @UseJWTAuth()
   @ApiOperation({ summary: 'Cập nhật playlist của user hiện tại' })
   @ApiParam({ name: 'id', description: 'ID của playlist' })
   @ApiBody({ type: UpdatePlaylistDto })

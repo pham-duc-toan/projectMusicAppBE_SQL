@@ -51,9 +51,9 @@ export class TopicsController {
     CloudinaryFileUploadInterceptor,
   )
   async create(@Body() createTopicDto: CreateTopicDto) {
-    console.log('createTopicDto', createTopicDto);
+    // console.log('createTopicDto', createTopicDto);
 
-    // return this.topicsService.create(createTopicDto);
+    return this.topicsService.create(createTopicDto);
   }
 
   @Get()

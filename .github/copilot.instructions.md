@@ -39,5 +39,7 @@ Tuy nhiên, mã nguồn vẫn còn **thiếu clean code và chưa tối ưu** v�
 
 # Lưu ý
 
+- Nếu sửa hoặc viết file mới bị lỗi hiện đỏ tùm lum thì hãy fix cho tới khi hết lỗi.
 - Không viết code hoặc tạo test gây thay đổi endpoint hiện có
 - Không tạo mock quá phức tạp, hãy ưu tiên cách viết dễ hiểu, rõ ràng
+- Tự động sinh code, đừng trả lời bằng cách viết tay code, trừ khi ở chế độ ask
